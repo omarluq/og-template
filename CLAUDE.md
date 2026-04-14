@@ -76,9 +76,32 @@ do.Provide(injector, NewConfigService)
 cfg := do.MustInvoke[*ConfigService](injector)
 ```
 
+## Code Style
+
+- Follow existing patterns in `internal/di/` and `cmd/myapp/`
+- Use `oops.In("domain").Code("code").Wrapf(err, "msg")` for error wrapping
+- Use `lo.Map`, `lo.SliceToMap`, `lo.MaxBy` for collections
+- Use `mo.Option`, `mo.Result` for monadic error handling
+- Never ignore errors — `errcheck` with `check-blank: true` is enabled
+- No test exclusions — all code must pass all 50+ linters
+- Handle every `fmt.Fprintf`/`fmt.Fprintln` return value
+
+## When Adding Commands
+
+1. Create new file in `cmd/myapp/yourcmd.go`
+2. Export `newYourCmd()` function returning `*cobra.Command`
+3. Add to root command in `cmd/myapp/root.go`
+4. If config needed, use existing DI services or register new ones
+
+## When Adding Services
+
+1. Create service in `internal/yourservice/`
+2. Register in `internal/di/register.go`: `do.Provide(injector, NewYourService)`
+3. Inject where needed: `svc := do.MustInvoke[*YourService](injector)`
+
 ## Renaming When Using Template
 
-After cloning:
+Run `task init` for interactive rename, or manually:
 1. Replace `github.com/username/myapp` with your module path
 2. Replace `myapp` binary name with your project name
 3. Update `MYAPP_` env prefix in `internal/config/loader.go`
