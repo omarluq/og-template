@@ -31,7 +31,7 @@ project/
 ├── scripts/               # Build/deployment scripts (optional)
 ├── go.mod
 ├── go.sum
-├── Makefile               # Build automation
+├── Taskfile.yml           # Build automation (Task)
 ├── .gitignore             # Git ignore patterns
 ├── .golangci.yml          # Linter configuration
 ├── LICENSE                # License file
@@ -50,7 +50,7 @@ my-tool/
 ├── internal/
 │   └── core.go            # Application logic
 ├── go.mod
-├── Makefile               # Build automation (optional but recommended)
+├── Taskfile.yml           # Build automation (Task) (optional but recommended)
 ├── .gitignore             # Git ignore patterns
 ├── .golangci.yml          # Linter configuration (optional)
 ├── LICENSE                # License file (recommended)
@@ -70,7 +70,7 @@ my-library/
 │       └── core.go
 ├── go.mod
 ├── go.sum
-├── Makefile               # Build automation
+├── Taskfile.yml           # Build automation (Task)
 ├── .gitignore             # Git ignore patterns
 ├── .golangci.yml          # Linter configuration
 ├── LICENSE                # License file

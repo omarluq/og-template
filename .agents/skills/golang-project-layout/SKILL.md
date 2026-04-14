@@ -83,7 +83,7 @@ See [directory layout examples](references/directory-layouts.md) for universal, 
 
 Every Go project should include at the root:
 
-- **Makefile** — build automation. See [Makefile template](assets/Makefile)
+- **Taskfile.yml** — build automation via [Task](https://taskfile.dev/). See [Taskfile template](assets/Taskfile.yml)
 - **.gitignore** — git ignore patterns. See [.gitignore template](assets/.gitignore)
 - **.golangci.yml** — linter config. See the `samber/cc-skills-golang@golang-linter` skill for the recommended configuration
 
