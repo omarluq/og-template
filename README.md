@@ -22,7 +22,7 @@ Omar's Opinionated Go project template with batteries included.
 | **CI/CD**      | GitHub Actions (lint + test + build matrix + release)                                                             |
 | **Deps**       | [Renovate](https://docs.renovatebot.com/) (automated dependency updates)                                          |
 | **AI Skills**  | [cc-skills-golang](https://github.com/samber/cc-skills-golang) (opinionated agentic coding skills in `.agents/`)  |
-| **Init**       | [gum](https://github.com/charmbracelet/gum) (interactive project setup wizard via `task init`)                    |
+| **Init**       | [huh](https://github.com/charmbracelet/huh) + [lipgloss](https://charm.land/lipgloss) (interactive project setup via `task init`) |
 
 ## Quick Start
 
@@ -40,12 +40,12 @@ cd yourproject
 Run the interactive init task to rename module, binary, and env prefix:
 
 ```bash
-mise install          # Install Go, Task, golangci-lint, lefthook, gum
+mise install          # Install Go, Task, golangci-lint, lefthook
 task init             # Rename + deps + git hooks
 task ci               # Verify everything works
 ```
 
-`task init` uses [gum](https://github.com/charmbracelet/gum) to prompt for your module path, binary name, and env prefix, then rewrites all files, renames `cmd/myapp/`, runs `go mod tidy`, downloads deps, installs git hooks, and cleans up after itself (removes `scripts/`, gum from `.mise.toml`, and the init task from `Taskfile.yml`).
+`task init` uses [huh](https://github.com/charmbracelet/huh) to prompt for your module path, binary name, and env prefix, then rewrites all files, renames `cmd/myapp/`, runs `go mod tidy`, downloads deps, installs git hooks, and cleans up after itself (removes `cmd/init/` and the init task from `Taskfile.yml`).
 
 ## Project Structure
 

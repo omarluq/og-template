@@ -12,6 +12,3 @@ go = "1.26.1"
 
 # Git hooks
 "go:github.com/evilmartians/lefthook/v2" = "2.1.4"
-
-# Interactive prompts for init
-"go:github.com/charmbracelet/gum" = "latest"

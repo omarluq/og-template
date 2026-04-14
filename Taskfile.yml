@@ -107,7 +107,7 @@ tasks:
   init:
     desc: Initialize project (interactive rename + deps + hooks)
     cmds:
-      - bash scripts/init.sh
+      - go run ./cmd/init
       - task: deps
       - task: hooks-install
 
