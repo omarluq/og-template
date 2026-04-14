@@ -1,0 +1,7 @@
+app:
+  name: myapp
+  env: development
+
+logging:
+  level: info
+  format: pretty

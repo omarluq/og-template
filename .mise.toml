@@ -1,0 +1,17 @@
+# mise tool version management
+
+[tools]
+# Runtime toolchain
+go = "1.26.1"
+
+# Task runner
+"go:github.com/go-task/task/v3/cmd/task" = "3.49.1"
+
+# Linter
+"go:github.com/golangci/golangci-lint/v2/cmd/golangci-lint" = "2.11.4"
+
+# Git hooks
+"go:github.com/evilmartians/lefthook/v2" = "2.1.4"
+
+# Interactive prompts for init
+"go:github.com/charmbracelet/gum" = "latest"
