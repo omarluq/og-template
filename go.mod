@@ -5,7 +5,7 @@ go 1.26.1
 require (
 	charm.land/fang/v2 v2.0.1
 	charm.land/lipgloss/v2 v2.0.3
-	github.com/charmbracelet/huh v0.6.0
+	github.com/charmbracelet/huh/v2 v2.0.3
 	github.com/rs/zerolog v1.35.0
 	github.com/samber/do/v2 v2.0.0
 	github.com/samber/lo v1.53.0
