@@ -196,6 +196,10 @@ func finalize(root projectRoot, binary string) error {
 		return taskErr
 	}
 
+	if rmErr := os.RemoveAll("cmd/init"); rmErr != nil {
+		return oops.Wrapf(rmErr, "remove cmd/init")
+	}
+
 	writeOut("Running go mod tidy...")
 
 	cmd := exec.CommandContext(context.Background(), "go", "mod", "tidy")
@@ -204,10 +208,6 @@ func finalize(root projectRoot, binary string) error {
 
 	if tidyErr := cmd.Run(); tidyErr != nil {
 		return oops.Wrapf(tidyErr, "go mod tidy")
-	}
-
-	if rmErr := os.RemoveAll("cmd/init"); rmErr != nil {
-		return oops.Wrapf(rmErr, "remove cmd/init")
 	}
 
 	writeOut("")
