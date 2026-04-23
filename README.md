@@ -43,7 +43,7 @@ task init             # Rename + deps + git hooks
 task ci               # Verify everything works
 ```
 
-`task init` uses [huh](https://charm.land/huh/v2) to prompt for your module path, binary name, and env prefix, then rewrites all files, renames `cmd/myapp/`, runs `go mod tidy`, downloads deps, installs git hooks, and cleans up after itself (removes `cmd/init/` and the init task from `Taskfile.yml`).
+`task init` uses [huh](https://charm.land/huh/v2) to prompt for your module path, binary name, env prefix, and which AI coding assistant harnesses to keep (`.adal`, `.augment`, `.claude`, `.cursor`, etc.). It then rewrites all files, renames `cmd/myapp/`, prunes unselected harness directories (symlinks only — the shared `.agents/skills/` source is preserved), runs `go mod tidy`, downloads deps, installs git hooks, and cleans up after itself (removes `cmd/init/` and the init task from `Taskfile.yml`).
 
 ## Project Structure
 
@@ -263,7 +263,9 @@ Renovate is pre-configured with `config:recommended`. Once enabled on your GitHu
 
 ### AI Coding Skills
 
-The `.agents/` directory contains [cc-skills-golang](https://github.com/samber/cc-skills-golang) — a curated set of agentic coding skills for AI assistants working in Go codebases. These provide opinionated guidance for code generation, testing patterns, and project conventions.
+The `.agents/skills/` directory contains [cc-skills-golang](https://github.com/samber/cc-skills-golang) — a curated set of agentic coding skills for AI assistants working in Go codebases. These provide opinionated guidance for code generation, testing patterns, and project conventions.
+
+Multiple harness directories (`.adal`, `.augment`, `.claude`, `.codebuddy`, `.continue`, etc.) contain symlinks into `.agents/skills/`, allowing different AI coding assistants to access the same skill definitions. Run `task init` to select which harnesses you want to keep for your project.
 
 ## License
 
