@@ -11,6 +11,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"charm.land/huh/v2"
 	"github.com/samber/oops"
+	"github.com/samber/lo"
 )
 
 const (
@@ -18,6 +19,38 @@ const (
 	oldBinary = "myapp"
 	oldPrefix = "MYAPP"
 )
+
+// allHarnesses lists all supported AI coding assistant harnesses.
+var allHarnesses = []string{
+	".adal",
+	".augment",
+	".claude",
+	".codebuddy",
+	".commandcode",
+	".continue",
+	".cortex",
+	".crush",
+	".factory",
+	".goose",
+	".iflow",
+	".junie",
+	".kilocode",
+	".kiro",
+	".kode",
+	".mcpjam",
+	".mux",
+	".neovate",
+	".openhands",
+	".pi",
+	".pochi",
+	".qoder",
+	".qwen",
+	".roo",
+	".trae",
+	".vibe",
+	".windsurf",
+	".zencoder",
+}
 
 var (
 	titleStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("212"))
@@ -54,7 +87,7 @@ func run() error {
 	writeOut(titleStyle.Render("og-template init"))
 	writeOut("")
 
-	module, binary, prefix, promptErr := promptUser()
+	module, binary, prefix, keep, promptErr := promptUser()
 	if promptErr != nil {
 		return promptErr
 	}
@@ -65,13 +98,17 @@ func run() error {
 
 	writeOut("")
 
-	return applyAndFinalize(module, binary, prefix)
+	return applyAndFinalize(module, binary, prefix, keep)
 }
 
-func applyAndFinalize(module, binary, prefix string) error {
+func applyAndFinalize(module, binary, prefix string, keepHarnesses []string) error {
 	root, rootErr := newProjectRoot()
 	if rootErr != nil {
 		return rootErr
+	}
+
+	if pruneErr := pruneHarnesses(keepHarnesses); pruneErr != nil {
+		return pruneErr
 	}
 
 	files, collectErr := collectFiles(".")
@@ -130,8 +167,9 @@ func fixPathsAfterRename(files []string, binary string) {
 	}
 }
 
-func promptUser() (module, binary, prefix string, err error) {
+func promptUser() (module, binary, prefix string, keepHarnesses []string, err error) {
 	var confirm bool
+	var selectedHarnesses []string
 
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -149,6 +187,17 @@ func promptUser() (module, binary, prefix string, err error) {
 				Value(&prefix),
 		),
 		huh.NewGroup(
+			huh.NewMultiSelect[string]().
+				Title("Select AI coding assistant harnesses to keep").
+				Description("Unselected directories are removed; .agents/skills/ source is preserved.").
+				Options(lo.Map(allHarnesses, func(h string, _ int) huh.Option[string] {
+					return huh.NewOption(h, h)
+				})...).
+				Filterable(true).
+				Height(10).
+				Value(&selectedHarnesses),
+		),
+		huh.NewGroup(
 			huh.NewConfirm().
 				Title("Apply changes?").
 				Affirmative("Yes").
@@ -158,16 +207,45 @@ func promptUser() (module, binary, prefix string, err error) {
 	)
 
 	if formErr := form.Run(); formErr != nil {
-		return "", "", "", oops.Wrapf(formErr, "run form")
+		return "", "", "", nil, oops.Wrapf(formErr, "run form")
 	}
 
 	if !confirm {
 		writeOut("Aborted.")
 
-		return "", "", "", nil
+		return "", "", "", nil, nil
 	}
 
-	return module, binary, prefix, nil
+	return module, binary, prefix, selectedHarnesses, nil
+}
+
+// pruneHarnesses removes harness directories not included in keep.
+// Because each harness's skills/ subdir contains symlinks into .agents/skills/,
+// os.RemoveAll only unlinks the symlinks and never follows them to the source.
+func pruneHarnesses(keep []string) error {
+	keepSet := lo.SliceToMap(keep, func(h string) (string, struct{}) {
+		return h, struct{}{}
+	})
+
+	writeOut("Pruning unselected harnesses...")
+
+	for _, harness := range allHarnesses {
+		if _, ok := keepSet[harness]; ok {
+			continue
+		}
+
+		if _, statErr := os.Stat(harness); os.IsNotExist(statErr) {
+			continue
+		} else if statErr != nil {
+			return oops.Wrapf(statErr, "stat harness %s", harness)
+		}
+
+		if rmErr := os.RemoveAll(harness); rmErr != nil {
+			return oops.Wrapf(rmErr, "remove harness %s", harness)
+		}
+	}
+
+	return nil
 }
 
 func renameCmdDir(binary string) error {
