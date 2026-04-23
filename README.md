@@ -1,27 +1,25 @@
-# og-template
-
-Omar's Opinionated Go project template with batteries included.
+![og-template banner](banner.png)
 
 ## What's Included
 
-| Category       | Tool                                                                                                              |
-| -------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **CLI**        | [Cobra](https://github.com/spf13/cobra) + [Fang v2](https://charm.land/fang) (styled help, manpages, completions) |
-| **Config**     | [Viper](https://github.com/spf13/viper) (YAML + env vars + defaults)                                              |
-| **DI**         | [samber/do v2](https://github.com/samber/do) (lazy dependency injection)                                          |
-| **Functional** | [samber/lo](https://github.com/samber/lo) (map, filter, reduce)                                                   |
-| **Monads**     | [samber/mo](https://github.com/samber/mo) (Option, Result, Either)                                                |
-| **Errors**     | [samber/oops](https://github.com/samber/oops) (structured errors with context)                                    |
-| **Logging**    | [zerolog](https://github.com/rs/zerolog) + [slog-zerolog](https://github.com/samber/slog-zerolog) bridge          |
-| **Testing**    | [testify](https://github.com/stretchr/testify) (assert + require)                                                 |
-| **Linting**    | [golangci-lint v2](https://golangci-lint.run/) (50+ linters, strict config)                                       |
-| **Tasks**      | [Task](https://taskfile.dev/) (build, test, lint, ci)                                                             |
-| **Tools**      | [mise](https://mise.jdx.dev/) (Go, Task, golangci-lint, lefthook versions)                                        |
-| **Hooks**      | [Lefthook](https://github.com/evilmartians/lefthook) (pre-commit, pre-push, conventional commits)                 |
-| **Release**    | [GoReleaser v2](https://goreleaser.com/) (cross-compile, checksums, changelog)                                    |
-| **CI/CD**      | GitHub Actions (lint + test + build matrix + release)                                                             |
-| **Deps**       | [Renovate](https://docs.renovatebot.com/) (automated dependency updates)                                          |
-| **AI Skills**  | [cc-skills-golang](https://github.com/samber/cc-skills-golang) (opinionated agentic coding skills in `.agents/`)  |
+| Category       | Tool                                                                                                                   |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **CLI**        | [Cobra](https://github.com/spf13/cobra) + [Fang v2](https://charm.land/fang) (styled help, manpages, completions)      |
+| **Config**     | [Viper](https://github.com/spf13/viper) (YAML + env vars + defaults)                                                   |
+| **DI**         | [samber/do v2](https://github.com/samber/do) (lazy dependency injection)                                               |
+| **Functional** | [samber/lo](https://github.com/samber/lo) (map, filter, reduce)                                                        |
+| **Monads**     | [samber/mo](https://github.com/samber/mo) (Option, Result, Either)                                                     |
+| **Errors**     | [samber/oops](https://github.com/samber/oops) (structured errors with context)                                         |
+| **Logging**    | [zerolog](https://github.com/rs/zerolog) + [slog-zerolog](https://github.com/samber/slog-zerolog) bridge               |
+| **Testing**    | [testify](https://github.com/stretchr/testify) (assert + require)                                                      |
+| **Linting**    | [golangci-lint v2](https://golangci-lint.run/) (50+ linters, strict config)                                            |
+| **Tasks**      | [Task](https://taskfile.dev/) (build, test, lint, ci)                                                                  |
+| **Tools**      | [mise](https://mise.jdx.dev/) (Go, Task, golangci-lint, lefthook versions)                                             |
+| **Hooks**      | [Lefthook](https://github.com/evilmartians/lefthook) (pre-commit, pre-push, conventional commits)                      |
+| **Release**    | [GoReleaser v2](https://goreleaser.com/) (cross-compile, checksums, changelog)                                         |
+| **CI/CD**      | GitHub Actions (lint + test + build matrix + release)                                                                  |
+| **Deps**       | [Renovate](https://docs.renovatebot.com/) (automated dependency updates)                                               |
+| **AI Skills**  | [cc-skills-golang](https://github.com/samber/cc-skills-golang) (opinionated agentic coding skills in `.agents/`)       |
 | **Init**       | [huh](https://charm.land/huh/v2) + [lipgloss](https://charm.land/lipgloss) (interactive project setup via `task init`) |
 
 ## Quick Start
@@ -102,6 +100,7 @@ task clean        # Remove all artifacts and caches
 The CLI uses [Cobra](https://github.com/spf13/cobra) for command structure and [Fang v2](https://charm.land/fang) as a wrapper that adds styled help pages, automatic `--version` flag, manpage generation via a hidden `man` subcommand, and shell completions out of the box.
 
 Entry point (`cmd/myapp/main.go`):
+
 - Sets up signal handling (`SIGINT`, `SIGTERM`)
 - Calls `fang.Execute()` which wraps the root Cobra command
 - Returns exit code 1 on error, 0 on success
@@ -166,14 +165,17 @@ The logger service creates a `zerolog.Logger` and bridges it to Go's `slog` via 
 Three hooks are installed via `lefthook install`:
 
 **pre-commit** (runs in parallel):
+
 - `golangci-lint run --fix` on staged `.go` files (auto-stages fixes)
 - `task test-short` for fast feedback
 
 **pre-push**:
+
 - `task test` (full test suite with race detector)
 - `task build` (ensures the binary compiles)
 
 **commit-msg**:
+
 - Enforces [Conventional Commits](https://www.conventionalcommits.org/) format
 - Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`, `build`
 - Format: `type(scope?): subject`
@@ -185,23 +187,24 @@ Hooks skip on merge and rebase to avoid friction.
 
 The `.golangci.yml` enables 50+ linters with strict settings and **no exclusions on test files**:
 
-| Setting | Value | Why |
-|---------|-------|-----|
-| `gocyclo.min-complexity` | 10 | Keep functions simple |
-| `gocognit.min-complexity` | 15 | Enforce readability |
-| `funlen.lines` | 80 | Short functions |
-| `funlen.statements` | 50 | Short functions |
-| `lll.line-length` | 120 | Reasonable line width |
-| `dupl.threshold` | 100 | Catch copy-paste |
-| `errcheck.check-type-assertions` | true | No unchecked type casts |
-| `errcheck.check-blank` | true | No `_ = err` |
-| `exhaustruct` | project packages only | Catch missing struct fields |
+| Setting                          | Value                 | Why                         |
+| -------------------------------- | --------------------- | --------------------------- |
+| `gocyclo.min-complexity`         | 10                    | Keep functions simple       |
+| `gocognit.min-complexity`        | 15                    | Enforce readability         |
+| `funlen.lines`                   | 80                    | Short functions             |
+| `funlen.statements`              | 50                    | Short functions             |
+| `lll.line-length`                | 120                   | Reasonable line width       |
+| `dupl.threshold`                 | 100                   | Catch copy-paste            |
+| `errcheck.check-type-assertions` | true                  | No unchecked type casts     |
+| `errcheck.check-blank`           | true                  | No `_ = err`                |
+| `exhaustruct`                    | project packages only | Catch missing struct fields |
 
 Only protobuf (`.pb.go`) and generated (`_generated.go`) files are excluded.
 
 ### Build: ldflags Version Injection
 
 `task build` injects version metadata via `-ldflags`:
+
 - `Version` — from `git describe --tags --always --dirty`
 - `Commit` — from `git rev-parse --short HEAD`
 - `BuildDate` — UTC timestamp
@@ -211,6 +214,7 @@ The `internal/vinfo` package exposes `String()` which formats these for `--versi
 ### CI/CD: GitHub Actions
 
 **CI** (`.github/workflows/ci.yml`):
+
 - Triggers on push/PR to main/master
 - Runs golangci-lint via official action
 - Runs tests with coverage (uploads to Codecov)
@@ -219,6 +223,7 @@ The `internal/vinfo` package exposes `String()` which formats these for `--versi
 - Concurrency groups cancel superseded runs
 
 **Release** (`.github/workflows/release.yml`):
+
 - Triggers on `v*.*.*` tag push
 - Runs GoReleaser v2 to build, archive, generate changelog, and publish GitHub release
 
@@ -234,6 +239,7 @@ git push origin v0.1.0  # Triggers release workflow
 ### Tool Versions: mise
 
 All tool versions are pinned in `.mise.toml`:
+
 - **Go** — pinned to specific patch version
 - **Task** — pinned
 - **golangci-lint** — pinned
@@ -244,6 +250,7 @@ Run `mise install` to get the exact versions. No global installs needed.
 ### Local Caches
 
 Build caches are kept per-project (not in `$HOME`) for isolation:
+
 - `.gocache/` — Go build cache
 - `.gomodcache/` — Go module cache
 - `.tmp/` — golangci-lint cache, temp files
