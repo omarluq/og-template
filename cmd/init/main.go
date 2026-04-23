@@ -107,8 +107,8 @@ func applyAndFinalize(module, binary, prefix string, keepHarnesses []string) err
 		return rootErr
 	}
 
-	if pruneErr := pruneHarnesses(keepHarnesses); pruneErr != nil {
-		return pruneErr
+	if linkErr := createHarnessSymlinks(keepHarnesses); linkErr != nil {
+		return linkErr
 	}
 
 	files, collectErr := collectFiles(".")
@@ -188,8 +188,8 @@ func promptUser() (module, binary, prefix string, keepHarnesses []string, err er
 		),
 		huh.NewGroup(
 			huh.NewMultiSelect[string]().
-				Title("Select AI coding assistant harnesses to keep").
-				Description("Unselected directories are removed; .agents/skills/ source is preserved.").
+				Title("Select AI coding assistant harnesses to enable").
+				Description("Creates .<harness>/skills/ symlinks into .agents/skills/ source.").
 				Options(lo.Map(allHarnesses, func(h string, _ int) huh.Option[string] {
 					return huh.NewOption(h, h)
 				})...).
@@ -219,29 +219,53 @@ func promptUser() (module, binary, prefix string, keepHarnesses []string, err er
 	return module, binary, prefix, selectedHarnesses, nil
 }
 
-// pruneHarnesses removes harness directories not included in keep.
-// Because each harness's skills/ subdir contains symlinks into .agents/skills/,
-// os.RemoveAll only unlinks the symlinks and never follows them to the source.
-func pruneHarnesses(keep []string) error {
-	keepSet := lo.SliceToMap(keep, func(h string) (string, struct{}) {
-		return h, struct{}{}
-	})
+// createHarnessSymlinks materializes .<harness>/skills/<skill> symlinks
+// pointing to .agents/skills/<skill> for each selected harness.
+func createHarnessSymlinks(selected []string) error {
+	if len(selected) == 0 {
+		return nil
+	}
 
-	writeOut("Pruning unselected harnesses...")
+	skills, listErr := listAgentSkills()
+	if listErr != nil {
+		return listErr
+	}
 
-	for _, harness := range allHarnesses {
-		if _, ok := keepSet[harness]; ok {
-			continue
+	writeOut("Creating harness symlinks...")
+
+	for _, harness := range selected {
+		if linkErr := linkHarnessSkills(harness, skills); linkErr != nil {
+			return linkErr
 		}
+	}
 
-		if _, statErr := os.Stat(harness); os.IsNotExist(statErr) {
-			continue
-		} else if statErr != nil {
-			return oops.Wrapf(statErr, "stat harness %s", harness)
-		}
+	return nil
+}
 
-		if rmErr := os.RemoveAll(harness); rmErr != nil {
-			return oops.Wrapf(rmErr, "remove harness %s", harness)
+func listAgentSkills() ([]string, error) {
+	entries, readErr := os.ReadDir(filepath.Join(".agents", "skills"))
+	if readErr != nil {
+		return nil, oops.Wrapf(readErr, "read .agents/skills")
+	}
+
+	return lo.FilterMap(entries, func(e os.DirEntry, _ int) (string, bool) {
+		return e.Name(), e.IsDir()
+	}), nil
+}
+
+func linkHarnessSkills(harness string, skills []string) error {
+	skillsDir := filepath.Join(harness, "skills")
+
+	if mkErr := os.MkdirAll(skillsDir, 0o750); mkErr != nil {
+		return oops.Wrapf(mkErr, "mkdir %s", skillsDir)
+	}
+
+	for _, skill := range skills {
+		target := filepath.Join("..", "..", ".agents", "skills", skill)
+		link := filepath.Join(skillsDir, skill)
+
+		if symErr := os.Symlink(target, link); symErr != nil && !os.IsExist(symErr) {
+			return oops.Wrapf(symErr, "symlink %s", link)
 		}
 	}
 

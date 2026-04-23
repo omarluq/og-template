@@ -43,12 +43,13 @@ task init             # Rename + deps + git hooks
 task ci               # Verify everything works
 ```
 
-`task init` uses [huh](https://charm.land/huh/v2) to prompt for your module path, binary name, env prefix, and which AI coding assistant harnesses to keep (`.adal`, `.augment`, `.claude`, `.cursor`, etc.). It then rewrites all files, renames `cmd/myapp/`, prunes unselected harness directories (symlinks only — the shared `.agents/skills/` source is preserved), runs `go mod tidy`, downloads deps, installs git hooks, and cleans up after itself (removes `cmd/init/` and the init task from `Taskfile.yml`).
+`task init` uses [huh](https://charm.land/huh/v2) to prompt for your module path, binary name, env prefix, and which AI coding assistant harnesses to enable (`.adal`, `.augment`, `.claude`, etc.). For each selected harness, it creates symlinks from `.<harness>/skills/` into `.agents/skills/`. After setup, it rewrites all files, renames `cmd/myapp/`, runs `go mod tidy`, downloads deps, installs git hooks, and cleans up after itself (removes `cmd/init/` and the init task from `Taskfile.yml`).
 
 ## Project Structure
 
 ```
 .
+├── .agents/skills/       # AI coding skills (cc-skills-golang, symlinked per harness)
 ├── cmd/myapp/            # CLI entrypoint and commands
 │   ├── main.go           #   fang.Execute with signal handling
 │   ├── root.go           #   Root cobra command
@@ -265,7 +266,7 @@ Renovate is pre-configured with `config:recommended`. Once enabled on your GitHu
 
 The `.agents/skills/` directory contains [cc-skills-golang](https://github.com/samber/cc-skills-golang) — a curated set of agentic coding skills for AI assistants working in Go codebases. These provide opinionated guidance for code generation, testing patterns, and project conventions.
 
-Multiple harness directories (`.adal`, `.augment`, `.claude`, `.codebuddy`, `.continue`, etc.) contain symlinks into `.agents/skills/`, allowing different AI coding assistants to access the same skill definitions. Run `task init` to select which harnesses you want to keep for your project.
+Only `.agents/skills/` is committed (the source of truth). At `task init`, you pick which AI coding assistants you use and the init tool creates `.<harness>/skills/` symlink directories pointing into `.agents/skills/`. Supported harnesses include `.adal`, `.augment`, `.claude`, `.codebuddy`, `.continue`, `.cortex`, `.crush`, `.factory`, `.goose`, `.iflow`, `.junie`, `.kilocode`, `.kiro`, `.kode`, `.openhands`, `.qoder`, `.qwen`, `.roo`, `.trae`, `.windsurf`, `.zencoder`, and more — all gitignored so your repo stays clean.
 
 ## License
 
