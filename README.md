@@ -266,7 +266,7 @@ Renovate is pre-configured with `config:recommended`. Once enabled on your GitHu
 
 The `.agents/skills/` directory contains [cc-skills-golang](https://github.com/samber/cc-skills-golang) — a curated set of agentic coding skills for AI assistants working in Go codebases. These provide opinionated guidance for code generation, testing patterns, and project conventions.
 
-Only `.agents/skills/` is committed (the source of truth). At `task init`, you pick which AI coding assistants you use and the init tool creates `.<harness>/skills/` symlink directories pointing into `.agents/skills/`. Supported harnesses include `.adal`, `.augment`, `.claude`, `.codebuddy`, `.continue`, `.cortex`, `.crush`, `.factory`, `.goose`, `.iflow`, `.junie`, `.kilocode`, `.kiro`, `.kode`, `.openhands`, `.qoder`, `.qwen`, `.roo`, `.trae`, `.windsurf`, `.zencoder`, and more — all gitignored so your repo stays clean.
+`.agents/skills/` is the single source of truth. At `task init`, you pick which AI coding assistants you use and the init tool creates `.<harness>/skills/` symlink directories pointing into `.agents/skills/`. Supported harnesses include `.adal`, `.augment`, `.claude`, `.codebuddy`, `.continue`, `.cortex`, `.crush`, `.factory`, `.goose`, `.iflow`, `.junie`, `.kilocode`, `.kiro`, `.kode`, `.openhands`, `.qoder`, `.qwen`, `.roo`, `.trae`, `.windsurf`, `.zencoder`, and more.
 
 ## License
 

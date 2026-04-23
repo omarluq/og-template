@@ -32,12 +32,11 @@ coverage.html
 Thumbs.db
 
 # AI tool configs
-.claude
-.opencode
-
-# Harness symlinks (created by task init)
+.claude/
+.opencode/
 .adal/
 .augment/
+.bob/
 .codebuddy/
 .commandcode/
 .continue/
@@ -63,4 +62,4 @@ Thumbs.db
 .vibe/
 .windsurf/
 .zencoder/
-skills/
+/skills/

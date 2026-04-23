@@ -107,7 +107,7 @@ func applyAndFinalize(module, binary, prefix string, keepHarnesses []string) err
 		return rootErr
 	}
 
-	if linkErr := createHarnessSymlinks(keepHarnesses); linkErr != nil {
+	if linkErr := createHarnessSymlinks(root, keepHarnesses); linkErr != nil {
 		return linkErr
 	}
 
@@ -220,8 +220,9 @@ func promptUser() (module, binary, prefix string, keepHarnesses []string, err er
 }
 
 // createHarnessSymlinks materializes .<harness>/skills/<skill> symlinks
-// pointing to .agents/skills/<skill> for each selected harness.
-func createHarnessSymlinks(selected []string) error {
+// pointing to .agents/skills/<skill> for each selected harness,
+// and un-ignores selected harnesses in .gitignore so they're committed.
+func createHarnessSymlinks(root projectRoot, selected []string) error {
 	if len(selected) == 0 {
 		return nil
 	}
@@ -239,7 +240,27 @@ func createHarnessSymlinks(selected []string) error {
 		}
 	}
 
-	return nil
+	return unignoreHarnesses(root, selected)
+}
+
+func unignoreHarnesses(root projectRoot, selected []string) error {
+	data, readErr := root.readFile(".gitignore")
+	if readErr != nil {
+		return readErr
+	}
+
+	lines := strings.Split(string(data), "\n")
+	out := lo.Filter(lines, func(line string, _ int) bool {
+		trimmed := strings.TrimPrefix(strings.TrimSpace(line), "!")
+		for _, h := range selected {
+			if trimmed == h || strings.HasPrefix(trimmed, h+"/") {
+				return false
+			}
+		}
+		return true
+	})
+
+	return root.writeFile(".gitignore", []byte(strings.Join(out, "\n")), 0o600)
 }
 
 func listAgentSkills() ([]string, error) {

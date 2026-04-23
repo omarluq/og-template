@@ -1,6 +1,16 @@
 {
   "version": 1,
   "skills": {
+    "conventional-git": {
+      "source": "samber/cc-skills",
+      "sourceType": "github",
+      "computedHash": "9a045ca3b886375f60733fff9dd117e35eab2851095966a048e410dc70478962"
+    },
+    "deep-research": {
+      "source": "samber/cc-skills",
+      "sourceType": "github",
+      "computedHash": "6043d96503a19ffb9cc40ab6f661371dccb080d8397a1ca51f038bdee7f006fd"
+    },
     "golang-benchmark": {
       "source": "samber/cc-skills-golang",
       "sourceType": "github",
