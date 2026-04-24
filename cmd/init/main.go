@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"charm.land/lipgloss/v2"
 	"charm.land/huh/v2"
-	"github.com/samber/oops"
+	"charm.land/lipgloss/v2"
 	"github.com/samber/lo"
+	"github.com/samber/oops"
 )
 
 const (
