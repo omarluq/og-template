@@ -71,10 +71,10 @@ jobs:
           mkdir -p bin
           ext=''
           if [ "$GOOS" = 'windows' ]; then ext='.exe'; fi
-          go build -v -o bin/myapp-${{ matrix.goos }}-${{ matrix.goarch }}${ext} ./cmd/myapp
+          go build -v -o bin/og-template-${{ matrix.goos }}-${{ matrix.goarch }}${ext} ./cmd/og-template
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: myapp-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: og-template-${{ matrix.goos }}-${{ matrix.goarch }}
           path: bin/

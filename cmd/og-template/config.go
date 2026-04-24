@@ -11,7 +11,7 @@ import (
 	"github.com/samber/oops"
 	"github.com/spf13/cobra"
 
-	"github.com/username/myapp/internal/config"
+	"github.com/username/og-template/internal/config"
 )
 
 func newConfigCmd() *cobra.Command {
@@ -42,7 +42,7 @@ func newConfigShowCmd() *cobra.Command {
 
 			entries := configEntries(cfg)
 			env := resolveEnv(cfg.App.Env, "development")
-			envKeys := upperEnvKeys("MYAPP", entries)
+			envKeys := upperEnvKeys("OGTEMPLATE", entries)
 
 			keys := lo.Map(entries, func(e configEntry, _ int) string { return e.key })
 			sort.Strings(keys)
@@ -131,7 +131,7 @@ func resolveEnv(env, fallback string) string {
 	return mo.EmptyableToOption(env).OrElse(fallback)
 }
 
-// upperEnvKeys returns config keys uppercased with a given prefix (e.g. "MYAPP_APP_NAME").
+// upperEnvKeys returns config keys uppercased with a given prefix (e.g. "OGTEMPLATE_APP_NAME").
 func upperEnvKeys(prefix string, entries []configEntry) []string {
 	return lo.Map(entries, func(e configEntry, _ int) string {
 		return strings.ToUpper(prefix + "_" + strings.ReplaceAll(e.key, ".", "_"))

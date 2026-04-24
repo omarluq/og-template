@@ -1,4 +1,4 @@
-// Package main defines the myapp CLI entrypoint and top-level commands.
+// Package main defines the og-template CLI entrypoint and top-level commands.
 package main
 
 import (
@@ -10,7 +10,7 @@ import (
 
 	"charm.land/fang/v2"
 
-	"github.com/username/myapp/internal/vinfo"
+	"github.com/username/og-template/internal/vinfo"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module github.com/username/myapp
+module github.com/username/og-template
 
 go 1.26.1
 

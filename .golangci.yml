@@ -151,4 +151,4 @@ linters:
 
     exhaustruct:
       include:
-        - ^github\.com/username/myapp/.*
+        - ^github\.com/username/og-template/.*

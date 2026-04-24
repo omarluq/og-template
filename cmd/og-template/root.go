@@ -6,8 +6,8 @@ var cfgFile string
 
 func newRootCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:           "myapp",
-		Short:         "myapp is a command line tool",
+		Use:           "og-template",
+		Short:         "og-template is a command line tool",
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {

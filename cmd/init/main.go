@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	oldModule = "github.com/username/myapp"
-	oldBinary = "myapp"
-	oldPrefix = "MYAPP"
+	oldModule = "github.com/username/og-template"
+	oldBinary = "og-template"
+	oldPrefix = "OGTEMPLATE"
 )
 
 // allHarnesses lists all supported AI coding assistant harnesses.

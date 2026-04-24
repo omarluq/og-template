@@ -1,5 +1,5 @@
 app:
-  name: myapp
+  name: og-template
   env: development
 
 logging:

@@ -8,7 +8,7 @@ import (
 	"github.com/samber/do/v2"
 	slogzerolog "github.com/samber/slog-zerolog/v2"
 
-	"github.com/username/myapp/internal/config"
+	"github.com/username/og-template/internal/config"
 )
 
 // LoggerService exposes structured slog and zerolog loggers.

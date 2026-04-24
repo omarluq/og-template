@@ -43,14 +43,14 @@ task init             # Rename + deps + git hooks
 task ci               # Verify everything works
 ```
 
-`task init` uses [huh](https://charm.land/huh/v2) to prompt for your module path, binary name, env prefix, and which AI coding assistant harnesses to enable (`.adal`, `.augment`, `.claude`, etc.). For each selected harness, it creates symlinks from `.<harness>/skills/` into `.agents/skills/`. After setup, it rewrites all files, renames `cmd/myapp/`, runs `go mod tidy`, downloads deps, installs git hooks, and cleans up after itself (removes `cmd/init/` and the init task from `Taskfile.yml`).
+`task init` uses [huh](https://charm.land/huh/v2) to prompt for your module path, binary name, env prefix, and which AI coding assistant harnesses to enable (`.adal`, `.augment`, `.claude`, etc.). For each selected harness, it creates symlinks from `.<harness>/skills/` into `.agents/skills/`. After setup, it rewrites all files, renames `cmd/og-template/`, runs `go mod tidy`, downloads deps, installs git hooks, and cleans up after itself (removes `cmd/init/` and the init task from `Taskfile.yml`).
 
 ## Project Structure
 
 ```
 .
 ├── .agents/skills/       # AI coding skills (cc-skills-golang, symlinked per harness)
-├── cmd/myapp/            # CLI entrypoint and commands
+├── cmd/og-template/            # CLI entrypoint and commands
 │   ├── main.go           #   fang.Execute with signal handling
 │   ├── root.go           #   Root cobra command
 │   ├── config.go         #   config show/validate commands
@@ -100,7 +100,7 @@ task clean        # Remove all artifacts and caches
 
 The CLI uses [Cobra](https://github.com/spf13/cobra) for command structure and [Fang v2](https://charm.land/fang) as a wrapper that adds styled help pages, automatic `--version` flag, manpage generation via a hidden `man` subcommand, and shell completions out of the box.
 
-Entry point (`cmd/myapp/main.go`):
+Entry point (`cmd/og-template/main.go`):
 
 - Sets up signal handling (`SIGINT`, `SIGTERM`)
 - Calls `fang.Execute()` which wraps the root Cobra command
@@ -111,16 +111,16 @@ Entry point (`cmd/myapp/main.go`):
 Configuration loads from multiple sources with this precedence:
 
 1. `--config` CLI flag (explicit path)
-2. Environment variables prefixed with `MYAPP_` (e.g. `MYAPP_APP_NAME`, `MYAPP_LOGGING_LEVEL`)
+2. Environment variables prefixed with `OGTEMPLATE_` (e.g. `OGTEMPLATE_APP_NAME`, `OGTEMPLATE_LOGGING_LEVEL`)
 3. `config.yaml` in the current directory
-4. `$HOME/.config/myapp/config.yaml`
+4. `$HOME/.config/og-template/config.yaml`
 5. Built-in defaults (development mode, info logging, pretty format)
 
 The loader returns `mo.Result[*Config]` for monadic error handling. Config is validated after loading — invalid values produce clear error messages.
 
 ```bash
-myapp config show       # Display all resolved config values
-myapp config validate   # Check config is valid
+og-template config show       # Display all resolved config values
+og-template config validate   # Check config is valid
 ```
 
 ### Dependency Injection: samber/do v2
