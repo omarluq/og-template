@@ -15,9 +15,10 @@ import (
 )
 
 const (
-	oldModule = "github.com/username/og-template"
-	oldBinary = "og-template"
-	oldPrefix = "OGTEMPLATE"
+	oldModule    = "github.com/username/og-template"
+	oldShorthand = "username/og-template"
+	oldBinary    = "og-template"
+	oldPrefix    = "OGTEMPLATE"
 )
 
 // allHarnesses lists all supported AI coding assistant harnesses.
@@ -118,6 +119,7 @@ func applyAndFinalize(module, binary, prefix string, keepHarnesses []string) err
 
 	repls := []replacement{
 		{label: "Updating module paths...", old: oldModule, new: module},
+		{label: "Updating owner/repo references...", old: oldShorthand, new: shorthandFor(module)},
 		{label: "Updating binary name...", old: oldBinary, new: binary},
 	}
 
@@ -156,6 +158,17 @@ func applyReplacements(root projectRoot, files []string, repls []replacement) er
 	}
 
 	return nil
+}
+
+// shorthandFor returns the "owner/repo" shorthand from a full module path
+// like "github.com/alice/myservice" -> "alice/myservice".
+func shorthandFor(module string) string {
+	parts := strings.Split(module, "/")
+	if len(parts) < 2 {
+		return module
+	}
+
+	return parts[len(parts)-2] + "/" + parts[len(parts)-1]
 }
 
 func fixPathsAfterRename(files []string, binary string) {
