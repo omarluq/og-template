@@ -11,7 +11,7 @@ import (
 	"github.com/samber/oops"
 	"github.com/spf13/cobra"
 
-	"github.com/username/og-template/internal/config"
+	"github.com/omarluq/og-template/internal/config"
 )
 
 func newConfigCmd() *cobra.Command {

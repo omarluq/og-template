@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	oldModule    = "github.com/username/og-template"
-	oldShorthand = "username/og-template"
+	oldModule    = "github.com/omarluq/og-template"
+	oldShorthand = "omarluq/og-template"
 	oldBinary    = "og-template"
 	oldPrefix    = "OGTEMPLATE"
 )

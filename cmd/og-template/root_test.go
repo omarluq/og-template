@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	main "github.com/username/og-template/cmd/og-template"
+	main "github.com/omarluq/og-template/cmd/og-template"
 )
 
 func TestRootCmd_ShowsHelp(t *testing.T) {

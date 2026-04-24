@@ -3,7 +3,7 @@ package di
 import (
 	"github.com/samber/do/v2"
 
-	"github.com/username/og-template/internal/config"
+	"github.com/omarluq/og-template/internal/config"
 )
 
 // ConfigPathKey stores the optional config file path in the injector.

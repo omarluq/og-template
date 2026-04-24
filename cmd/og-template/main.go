@@ -10,7 +10,7 @@ import (
 
 	"charm.land/fang/v2"
 
-	"github.com/username/og-template/internal/vinfo"
+	"github.com/omarluq/og-template/internal/vinfo"
 )
 
 func main() {

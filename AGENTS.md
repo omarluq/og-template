@@ -102,7 +102,7 @@ cfg := do.MustInvoke[*ConfigService](injector)
 ## Renaming When Using Template
 
 Run `task init` for interactive rename, or manually:
-1. Replace `github.com/username/og-template` with your module path
+1. Replace `github.com/omarluq/og-template` with your module path
 2. Replace `og-template` binary name with your project name
 3. Update `OGTEMPLATE_` env prefix in `internal/config/loader.go`
 4. Rename `cmd/og-template/` to `cmd/yourproject/`

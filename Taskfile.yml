@@ -42,9 +42,9 @@ tasks:
       BUILD_DATE:
         sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
       LDFLAGS: >-
-        -X github.com/username/og-template/internal/vinfo.Version={{.VERSION}}
-        -X github.com/username/og-template/internal/vinfo.Commit={{.COMMIT}}
-        -X github.com/username/og-template/internal/vinfo.BuildDate={{.BUILD_DATE}}
+        -X github.com/omarluq/og-template/internal/vinfo.Version={{.VERSION}}
+        -X github.com/omarluq/og-template/internal/vinfo.Commit={{.COMMIT}}
+        -X github.com/omarluq/og-template/internal/vinfo.BuildDate={{.BUILD_DATE}}
     cmds:
       - go build -ldflags "{{.LDFLAGS}}" -o {{.BUILD_DIR}}/{{.BINARY_NAME}} {{.MAIN_PACKAGE}}
 
