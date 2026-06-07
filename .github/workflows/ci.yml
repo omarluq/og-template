@@ -37,7 +37,7 @@ jobs:
         run: task test-coverage
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           file: ./coverage.out
           token: ${{ secrets.CODECOV_TOKEN }}
