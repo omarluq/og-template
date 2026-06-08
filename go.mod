@@ -9,7 +9,7 @@ require (
 	github.com/rs/zerolog v1.35.1
 	github.com/samber/do/v2 v2.0.0
 	github.com/samber/lo v1.53.0
-	github.com/samber/mo v1.16.0
+	github.com/samber/mo v1.17.0
 	github.com/samber/oops v1.22.0
 	github.com/samber/slog-zerolog/v2 v2.9.2
 	github.com/spf13/cobra v1.10.2
