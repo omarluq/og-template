@@ -28,7 +28,7 @@ jobs:
           cache: true
 
       - name: Setup Task
-        uses: arduino/setup-task@v2
+        uses: arduino/setup-task@v3.0.0
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
