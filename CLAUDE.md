@@ -111,10 +111,9 @@ Run `task init` for interactive rename, or manually:
 
 1. `go.mod` - update module name
 2. `cmd/og-template/main.go` - import path
-3. `internal/vinfo/version.go` - import path in ldflags comment
-4. `Taskfile.yml` - binary name, MAIN_PACKAGE, ldflags paths
-5. `.golangci.yml` - exhaustruct include pattern
-6. `.goreleaser.yaml` - project_name, binary name, owner
-7. `.github/workflows/*.yml` - repo references
-8. `.mise.toml` - (optional, for mise pinning)
-9. `config.example.yaml` - (optional, example config)
+3. `Taskfile.yml` - binary name and MAIN_PACKAGE
+4. `.golangci.yml` - exhaustruct enforce pattern
+5. `.goreleaser.yaml` - project_name, binary name, owner
+6. `.github/workflows/*.yml` - repo references
+7. `.mise.toml` - (optional, for mise pinning)
+8. `config.example.yaml` - (optional, example config)

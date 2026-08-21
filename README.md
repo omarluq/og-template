@@ -24,7 +24,7 @@
 | **Errors**     | [samber/oops](https://github.com/samber/oops) (structured errors with context)                                         |
 | **Logging**    | [zerolog](https://github.com/rs/zerolog) + [slog-zerolog](https://github.com/samber/slog-zerolog) bridge               |
 | **Testing**    | [testify](https://github.com/stretchr/testify) (assert + require)                                                      |
-| **Linting**    | [golangci-lint v2](https://golangci-lint.run/) (50+ linters, strict config)                                            |
+| **Linting**    | [golangci-lint v2](https://golangci-lint.run/) (80+ linters, strict config)                                            |
 | **Tasks**      | [Task](https://taskfile.dev/) (build, test, lint, ci)                                                                  |
 | **Tools**      | [mise](https://mise.jdx.dev/) (Go, Task, golangci-lint, lefthook versions)                                             |
 | **Hooks**      | [Lefthook](https://github.com/evilmartians/lefthook) (pre-commit, pre-push, conventional commits)                      |
@@ -76,12 +76,12 @@ task ci               # Verify everything works
 │   │   ├── register.go   #   Service registration
 │   │   ├── config_service.go
 │   │   └── logger_service.go  # zerolog + slog bridge
-│   └── vinfo/            # Build version metadata (ldflags)
+│   └── vinfo/            # Embedded Go build metadata
 ├── .github/workflows/
 │   ├── ci.yml            # Lint + test + cross-platform build
 │   └── release.yml       # GoReleaser on tag push
 ├── Taskfile.yml          # build, test, lint, fmt, ci, clean, init
-├── .golangci.yml         # 50+ linters, strict settings
+├── .golangci.yml         # 80+ linters, strict settings
 ├── .goreleaser.yaml      # Cross-compile + changelog + archives
 ├── .mise.toml            # Pinned tool versions
 ├── lefthook.yml          # Pre-commit, pre-push, conventional commits
@@ -93,7 +93,7 @@ task ci               # Verify everything works
 ```bash
 task              # List all tasks
 task init         # Rename + deps + hooks (first-time only)
-task build        # Build binary with ldflags
+task build        # Build binary
 task run          # Build and run
 task test         # Run tests with race detector
 task test-short   # Run short tests only
@@ -198,7 +198,7 @@ Hooks skip on merge and rebase to avoid friction.
 
 ### Linting: golangci-lint v2
 
-The `.golangci.yml` enables 50+ linters with strict settings and **no exclusions on test files**:
+The `.golangci.yml` enables 80+ linters with strict settings and **no exclusions on test files**:
 
 | Setting                          | Value                 | Why                         |
 | -------------------------------- | --------------------- | --------------------------- |
@@ -214,15 +214,9 @@ The `.golangci.yml` enables 50+ linters with strict settings and **no exclusions
 
 Only protobuf (`.pb.go`) and generated (`_generated.go`) files are excluded.
 
-### Build: ldflags Version Injection
+### Build Metadata
 
-`task build` injects version metadata via `-ldflags`:
-
-- `Version` — from `git describe --tags --always --dirty`
-- `Commit` — from `git rev-parse --short HEAD`
-- `BuildDate` — UTC timestamp
-
-The `internal/vinfo` package exposes `String()` which formats these for `--version` output. Falls back to `debug.ReadBuildInfo()` for `go install` builds.
+The `internal/vinfo` package reads module version, VCS revision, and VCS timestamp from Go's embedded build information and formats them for `--version` output. This works consistently for local builds, `go install`, and GoReleaser builds without mutable package globals or custom metadata ldflags.
 
 ### CI/CD: GitHub Actions
 
