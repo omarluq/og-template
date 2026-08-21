@@ -210,7 +210,7 @@ The `.golangci.yml` enables 50+ linters with strict settings and **no exclusions
 | `dupl.threshold`                 | 100                   | Catch copy-paste            |
 | `errcheck.check-type-assertions` | true                  | No unchecked type casts     |
 | `errcheck.check-blank`           | true                  | No `_ = err`                |
-| `exhaustruct`                    | project packages only | Catch missing struct fields |
+| `exhaustruct_v5`                 | project packages only | Catch missing struct fields |
 
 Only protobuf (`.pb.go`) and generated (`_generated.go`) files are excluded.
 

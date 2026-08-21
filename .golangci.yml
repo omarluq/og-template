@@ -53,7 +53,7 @@ linters:
     - tparallel
     - wastedassign
     - nilnil
-    - exhaustruct
+    - exhaustruct_v5
     - varnamelen
     - forbidigo
     - cyclop
@@ -149,6 +149,7 @@ linters:
         - performance
         - style
 
-    exhaustruct:
-      include:
+    exhaustruct_v5:
+      explicit-mode: true
+      enforce-patterns:
         - ^github\.com/omarluq/og-template/.*
