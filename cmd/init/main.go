@@ -15,60 +15,59 @@ import (
 )
 
 const (
-	oldModule    = "github.com/omarluq/og-template"
-	oldShorthand = "omarluq/og-template"
-	oldBinary    = "og-template"
-	oldPrefix    = "OGTEMPLATE"
+	oldModule         = "github.com/omarluq/og-template"
+	oldShorthand      = "omarluq/og-template"
+	oldBinary         = "og-template"
+	oldPrefix         = "OGTEMPLATE"
+	harnessListHeight = 10
+	privateFileMode   = 0o600
+	privateDirMode    = 0o750
 )
 
 // allHarnesses lists all supported AI coding assistant harnesses.
-var allHarnesses = []string{
-	".adal",
-	".augment",
-	".claude",
-	".codebuddy",
-	".commandcode",
-	".continue",
-	".cortex",
-	".crush",
-	".factory",
-	".goose",
-	".iflow",
-	".junie",
-	".kilocode",
-	".kiro",
-	".kode",
-	".mcpjam",
-	".mux",
-	".neovate",
-	".openhands",
-	".pi",
-	".pochi",
-	".qoder",
-	".qwen",
-	".roo",
-	".trae",
-	".vibe",
-	".windsurf",
-	".zencoder",
+func allHarnesses() []string {
+	return []string{
+		".adal",
+		".augment",
+		".claude",
+		".codebuddy",
+		".commandcode",
+		".continue",
+		".cortex",
+		".crush",
+		".factory",
+		".goose",
+		".iflow",
+		".junie",
+		".kilocode",
+		".kiro",
+		".kode",
+		".mcpjam",
+		".mux",
+		".neovate",
+		".openhands",
+		".pi",
+		".pochi",
+		".qoder",
+		".qwen",
+		".roo",
+		".trae",
+		".vibe",
+		".windsurf",
+		".zencoder",
+	}
 }
 
-var (
-	titleStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("212"))
-	doneStyle  = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("76"))
-	errStyle   = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("196"))
-)
-
-// rewriteExts lists file extensions to rewrite.
-var rewriteExts = map[string]bool{
-	".go": true, ".yml": true, ".yaml": true,
-	".mod": true, ".md": true,
+func titleStyle() lipgloss.Style {
+	return lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("212"))
 }
 
-// skipDirs lists directories to skip.
-var skipDirs = map[string]bool{
-	".git": true, ".gocache": true, ".gomodcache": true,
-	".tmp": true, "bin": true, ".agents": true,
+func doneStyle() lipgloss.Style {
+	return lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("76"))
+}
+
+func errorStyle() lipgloss.Style {
+	return lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("196"))
 }
 
 type replacement struct {
@@ -79,13 +78,13 @@ type replacement struct {
 
 func main() {
 	if err := run(); err != nil {
-		writeOut(errStyle.Render(err.Error()))
+		writeOut(errorStyle().Render(err.Error()))
 		os.Exit(1)
 	}
 }
 
 func run() error {
-	writeOut(titleStyle.Render("og-template init"))
+	writeOut(titleStyle().Render("og-template init"))
 	writeOut("")
 
 	module, binary, prefix, keep, promptErr := promptUser()
@@ -163,12 +162,17 @@ func applyReplacements(root projectRoot, files []string, repls []replacement) er
 // shorthandFor returns the "owner/repo" shorthand from a full module path
 // like "github.com/alice/myservice" -> "alice/myservice".
 func shorthandFor(module string) string {
-	parts := strings.Split(module, "/")
-	if len(parts) < 2 {
+	repoSeparator := strings.LastIndex(module, "/")
+	if repoSeparator <= 0 {
 		return module
 	}
 
-	return parts[len(parts)-2] + "/" + parts[len(parts)-1]
+	ownerSeparator := strings.LastIndex(module[:repoSeparator], "/")
+	if ownerSeparator < 0 {
+		return module
+	}
+
+	return module[ownerSeparator+1:]
 }
 
 func fixPathsAfterRename(files []string, binary string) {
@@ -181,8 +185,10 @@ func fixPathsAfterRename(files []string, binary string) {
 }
 
 func promptUser() (module, binary, prefix string, keepHarnesses []string, err error) {
-	var confirm bool
-	var selectedHarnesses []string
+	var (
+		confirm           bool
+		selectedHarnesses []string
+	)
 
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -203,11 +209,11 @@ func promptUser() (module, binary, prefix string, keepHarnesses []string, err er
 			huh.NewMultiSelect[string]().
 				Title("Select AI coding assistant harnesses to enable").
 				Description("Creates .<harness>/skills/ symlinks into .agents/skills/ source.").
-				Options(lo.Map(allHarnesses, func(h string, _ int) huh.Option[string] {
+				Options(lo.Map(allHarnesses(), func(h string, _ int) huh.Option[string] {
 					return huh.NewOption(h, h)
 				})...).
 				Filterable(true).
-				Height(10).
+				Height(harnessListHeight).
 				Value(&selectedHarnesses),
 		),
 		huh.NewGroup(
@@ -270,10 +276,11 @@ func unignoreHarnesses(root projectRoot, selected []string) error {
 				return false
 			}
 		}
+
 		return true
 	})
 
-	return root.writeFile(".gitignore", []byte(strings.Join(out, "\n")), 0o600)
+	return root.writeFile(".gitignore", []byte(strings.Join(out, "\n")), privateFileMode)
 }
 
 func listAgentSkills() ([]string, error) {
@@ -290,7 +297,7 @@ func listAgentSkills() ([]string, error) {
 func linkHarnessSkills(harness string, skills []string) error {
 	skillsDir := filepath.Join(harness, "skills")
 
-	if mkErr := os.MkdirAll(skillsDir, 0o750); mkErr != nil {
+	if mkErr := os.MkdirAll(skillsDir, privateDirMode); mkErr != nil {
 		return oops.Wrapf(mkErr, "mkdir %s", skillsDir)
 	}
 
@@ -347,7 +354,7 @@ func finalize(root projectRoot, binary string) error {
 	}
 
 	writeOut("")
-	writeOut(doneStyle.Render("Done!"))
+	writeOut(doneStyle().Render("Done!"))
 	writeOut("")
 	writeOut("Next steps:")
 	writeOut("  mise exec -- task ci")
@@ -384,7 +391,7 @@ func removeTaskfileBlock(root projectRoot, fpath, blockName string) error {
 		result = append(result, line)
 	}
 
-	return root.writeFile(fpath, []byte(strings.Join(result, "\n")), 0o600)
+	return root.writeFile(fpath, []byte(strings.Join(result, "\n")), privateFileMode)
 }
 
 func isBlockEnd(line string) bool {
@@ -408,21 +415,42 @@ func collectFiles(root string) ([]string, error) {
 		}
 
 		if info.IsDir() {
-			if skipDirs[filepath.Base(fpath)] {
+			if shouldSkipDir(filepath.Base(fpath)) {
 				return filepath.SkipDir
 			}
 
 			return nil
 		}
 
-		if rewriteExts[filepath.Ext(fpath)] || strings.HasPrefix(filepath.Base(fpath), "Taskfile") {
+		if shouldRewriteExtension(filepath.Ext(fpath)) || strings.HasPrefix(filepath.Base(fpath), "Taskfile") {
 			files = append(files, fpath)
 		}
 
 		return nil
 	})
+	if walkErr != nil {
+		return nil, oops.Wrapf(walkErr, "walk %s", root)
+	}
 
-	return files, walkErr
+	return files, nil
+}
+
+func shouldRewriteExtension(ext string) bool {
+	switch ext {
+	case ".go", ".yml", ".yaml", ".mod", ".md":
+		return true
+	default:
+		return false
+	}
+}
+
+func shouldSkipDir(name string) bool {
+	switch name {
+	case ".git", ".gocache", ".gomodcache", ".tmp", "bin", ".agents":
+		return true
+	default:
+		return false
+	}
 }
 
 func writeOut(msg string) {
