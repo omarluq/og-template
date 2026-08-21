@@ -14,7 +14,7 @@ import (
 	"github.com/omarluq/og-template/internal/config"
 )
 
-func newConfigCmd() *cobra.Command {
+func newConfigCmd(configPath *string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config",
 		Short: "Manage application configuration",
@@ -23,19 +23,19 @@ func newConfigCmd() *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(newConfigShowCmd())
-	cmd.AddCommand(newConfigValidateCmd())
+	cmd.AddCommand(newConfigShowCmd(configPath))
+	cmd.AddCommand(newConfigValidateCmd(configPath))
 
 	return cmd
 }
 
-func newConfigShowCmd() *cobra.Command {
+func newConfigShowCmd(configPath *string) *cobra.Command {
 	return &cobra.Command{
 		Use:   "show",
 		Short: "Display resolved configuration",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			cfg, err := loadConfig()
+			cfg, err := loadConfig(*configPath)
 			if err != nil {
 				return err
 			}
@@ -77,13 +77,13 @@ func newConfigShowCmd() *cobra.Command {
 	}
 }
 
-func newConfigValidateCmd() *cobra.Command {
+func newConfigValidateCmd(configPath *string) *cobra.Command {
 	return &cobra.Command{
 		Use:   "validate",
 		Short: "Validate configuration and report errors",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			if _, err := loadConfig(); err != nil {
+			if _, err := loadConfig(*configPath); err != nil {
 				return err
 			}
 
@@ -92,8 +92,8 @@ func newConfigValidateCmd() *cobra.Command {
 	}
 }
 
-func loadConfig() (*config.Config, error) {
-	cfg, err := config.Load(cfgFile).Get()
+func loadConfig(configPath string) (*config.Config, error) {
+	cfg, err := config.Load(configPath).Get()
 	if err != nil {
 		return nil, oops.
 			In("config").

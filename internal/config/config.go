@@ -1,7 +1,7 @@
 // Package config loads and validates application configuration.
 package config
 
-import "fmt"
+import "errors"
 
 // Config is the fully resolved application configuration.
 type Config struct {
@@ -24,25 +24,25 @@ type LoggingConfig struct {
 // Validate ensures the configuration is internally consistent.
 func (c *Config) Validate() error {
 	if c.App.Name == "" {
-		return fmt.Errorf("config: app.name is required")
+		return errors.New("config: app.name is required")
 	}
 
 	switch c.App.Env {
 	case "development", "test", "production":
 	default:
-		return fmt.Errorf("config: app.env must be development, test, or production")
+		return errors.New("config: app.env must be development, test, or production")
 	}
 
 	switch c.Logging.Level {
 	case "debug", "info", "warn", "error":
 	default:
-		return fmt.Errorf("config: logging.level must be debug, info, warn, or error")
+		return errors.New("config: logging.level must be debug, info, warn, or error")
 	}
 
 	switch c.Logging.Format {
 	case "pretty", "json":
 	default:
-		return fmt.Errorf("config: logging.format must be pretty or json")
+		return errors.New("config: logging.format must be pretty or json")
 	}
 
 	return nil

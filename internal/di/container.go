@@ -33,8 +33,3 @@ func NewContainer(configPath string) (*Container, error) {
 func (c *Container) ShutdownWithContext(ctx context.Context) *do.ShutdownReport {
 	return c.injector.ShutdownWithContext(ctx)
 }
-
-// MustInvoke resolves a dependency and panics if it cannot be created.
-func MustInvoke[T any](c *Container) T {
-	return do.MustInvoke[T](c.injector)
-}

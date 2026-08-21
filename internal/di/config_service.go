@@ -2,6 +2,7 @@ package di
 
 import (
 	"github.com/samber/do/v2"
+	"github.com/samber/oops"
 
 	"github.com/omarluq/og-template/internal/config"
 )
@@ -20,7 +21,7 @@ func NewConfigService(injector do.Injector) (*ConfigService, error) {
 
 	cfg, err := config.Load(path).Get()
 	if err != nil {
-		return nil, err
+		return nil, oops.Wrapf(err, "load configuration")
 	}
 
 	return &ConfigService{cfg: cfg}, nil

@@ -2,9 +2,9 @@ package main
 
 import "github.com/spf13/cobra"
 
-var cfgFile string
-
 func newRootCmd() *cobra.Command {
+	var cfgFile string
+
 	cmd := &cobra.Command{
 		Use:           "og-template",
 		Short:         "og-template is a command line tool",
@@ -16,7 +16,7 @@ func newRootCmd() *cobra.Command {
 	}
 
 	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file path")
-	cmd.AddCommand(newConfigCmd())
+	cmd.AddCommand(newConfigCmd(&cfgFile))
 	cmd.AddCommand(newVersionCmd())
 
 	return cmd
