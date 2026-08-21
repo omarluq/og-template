@@ -58,6 +58,53 @@ linters:
     - forbidigo
     - cyclop
 
+    # Safety / correctness
+    - asasalint
+    - bidichk
+    - canonicalheader
+    - contextcheck
+    - durationcheck
+    - errchkjson
+    - fatcontext
+    - forcetypeassert
+    - makezero
+    - nilnesserr
+    - nosprintfhostport
+    - rowserrcheck
+    - sqlclosecheck
+    - usestdlibvars
+
+    # Modernization / tests / performance
+    - copyloopvar
+    - modernize
+    - perfsprint
+    - testifylint
+    - dupword
+    - intrange
+    - zerologlint
+    - sloglint
+    - loggercheck
+
+    # Strict style / API hygiene
+    - containedctx
+    - dogsled
+    - embeddedstructfieldcheck
+    - funcorder
+    - gochecknoglobals
+    - godoclint
+    - gomodguard_v2
+    - inamedparam
+    - interfacebloat
+    - ireturn
+    - mnd
+    - musttag
+    - nestif
+    - nlreturn
+    - protogetter
+    - tagliatelle
+    - wrapcheck
+    - wsl_v5
+
   exclusions:
     rules:
       - linters: [all]
@@ -148,6 +195,13 @@ linters:
         - opinionated
         - performance
         - style
+
+    tagliatelle:
+      case:
+        rules:
+          json: snake
+          yaml: snake
+          mapstructure: snake
 
     exhaustruct_v5:
       explicit-mode: true
