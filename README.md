@@ -23,13 +23,13 @@
 | **Monads**     | [samber/mo](https://github.com/samber/mo) (Option, Result, Either)                                                     |
 | **Errors**     | [samber/oops](https://github.com/samber/oops) (structured errors with context)                                         |
 | **Logging**    | [zerolog](https://github.com/rs/zerolog) + [slog-zerolog](https://github.com/samber/slog-zerolog) bridge               |
-| **Testing**    | [testify](https://github.com/stretchr/testify) (assert + require)                                                      |
-| **Linting**    | [golangci-lint v2](https://golangci-lint.run/) (80+ linters, strict config)                                            |
+| **Testing**    | [testify](https://github.com/stretchr/testify) + [goleak](https://github.com/uber-go/goleak)                            |
+| **Linting**    | [golangci-lint v2](https://golangci-lint.run/) + [deadcode](https://pkg.go.dev/golang.org/x/tools/cmd/deadcode)         |
 | **Tasks**      | [Task](https://taskfile.dev/) (build, test, lint, ci)                                                                  |
 | **Tools**      | [mise](https://mise.jdx.dev/) (Go, Task, golangci-lint, lefthook versions)                                             |
 | **Hooks**      | [Lefthook](https://github.com/evilmartians/lefthook) (pre-commit, pre-push, conventional commits)                      |
 | **Release**    | [GoReleaser v2](https://goreleaser.com/) (cross-compile, checksums, changelog)                                         |
-| **CI/CD**      | GitHub Actions (lint + test + build matrix + release)                                                                  |
+| **CI/CD**      | GitHub Actions (tidiness + lint + dead code + tests + security scans + build matrix + release)                         |
 | **Deps**       | [Renovate](https://docs.renovatebot.com/) (automated dependency updates)                                               |
 | **AI Skills**  | [cc-skills-golang](https://github.com/samber/cc-skills-golang) (opinionated agentic coding skills in `.agents/`)       |
 | **Init**       | [huh](https://charm.land/huh/v2) + [lipgloss](https://charm.land/lipgloss) (interactive project setup via `task init`) |
@@ -100,9 +100,11 @@ task test-short   # Run short tests only
 task test-coverage # Tests + coverage HTML report
 task lint         # golangci-lint
 task fmt          # golangci-lint --fix
-task ci           # fmt + lint + test + build
+task ci           # fmt + tidy-check + lint + deadcode + test + build
 task deps         # Download dependencies
 task tidy         # go mod tidy
+task tidy-check   # Verify go.mod and go.sum are tidy
+task deadcode     # Report unreachable project functions
 task clean        # Remove all artifacts and caches
 ```
 
@@ -223,11 +225,15 @@ The `internal/vinfo` package reads module version, VCS revision, and VCS timesta
 **CI** (`.github/workflows/ci.yml`):
 
 - Triggers on push/PR to main/master
-- Runs golangci-lint via official action
-- Runs tests with coverage (uploads to Codecov)
+- Verifies `go.mod` and `go.sum` are tidy
+- Runs golangci-lint and whole-project dead-code analysis
+- Runs race-enabled tests with coverage and goleak verification (uploads to Codecov)
+- Runs govulncheck and a Betterleaks secret scan
 - Cross-compiles build matrix: linux/darwin/windows × amd64/arm64
 - Uses `go-version-file: go.mod` (always matches local Go version)
 - Concurrency groups cancel superseded runs
+
+Betterleaks exceptions belong in `.betterleaksignore` and should be limited to documented false positives. The included entry allows the intentionally fake credential in the security skill documentation.
 
 **Release** (`.github/workflows/release.yml`):
 
