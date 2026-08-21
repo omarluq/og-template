@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://pkg.go.dev/github.com/omarluq/og-template"><img src="https://img.shields.io/badge/reference-007d9c?style=flat&labelColor=24292e&logo=go&logoColor=white" alt="Go Reference"></a>
-  <a href="https://go.dev/"><img src="https://img.shields.io/badge/-%3E%3D1.26-00ADD8?style=flat&labelColor=24292e&logo=go&logoColor=white" alt="Go Version"></a>
+  <a href="https://go.dev/"><img src="https://img.shields.io/badge/-%3E%3D1.27-00ADD8?style=flat&labelColor=24292e&logo=go&logoColor=white" alt="Go Version"></a>
   <a href="https://goreportcard.com/report/github.com/omarluq/og-template"><img src="https://img.shields.io/badge/report-A%2B-00ADD8?style=flat&labelColor=24292e&logo=go&logoColor=white" alt="Go Report Card"></a>
   <br/>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat&labelColor=24292e&logo=opensourceinitiative&logoColor=white" alt="License: MIT"></a>
