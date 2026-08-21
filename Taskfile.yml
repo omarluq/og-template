@@ -88,6 +88,18 @@ tasks:
     cmds:
       - go mod tidy
 
+  tidy-check:
+    desc: Verify module files are tidy
+    deps: [ensure-cache]
+    cmds:
+      - go mod tidy -diff
+
+  deadcode:
+    desc: Report unreachable production functions
+    deps: [ensure-cache]
+    cmds:
+      - go tool deadcode -test -filter='^github.com/omarluq/og-template/' ./...
+
   hooks-install:
     desc: Install git hooks
     cmds:
@@ -104,6 +116,8 @@ tasks:
     desc: Run CI checks
     cmds:
       - task: fmt
+      - task: tidy-check
       - task: lint
+      - task: deadcode
       - task: test
       - task: build
