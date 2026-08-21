@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"sort"
@@ -12,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/omarluq/og-template/internal/config"
+	"github.com/omarluq/og-template/internal/di"
 )
 
 func newConfigCmd(configPath *string) *cobra.Command {
@@ -93,12 +95,21 @@ func newConfigValidateCmd(configPath *string) *cobra.Command {
 }
 
 func loadConfig(configPath string) (*config.Config, error) {
-	cfg, err := config.Load(configPath).Get()
+	container, err := di.NewContainer(configPath)
 	if err != nil {
 		return nil, oops.
 			In("config").
 			Code("invalid_config").
 			Wrapf(err, "load configuration")
+	}
+
+	cfg := container.Config()
+
+	if report := container.ShutdownWithContext(context.Background()); !report.Succeed {
+		return nil, oops.
+			In("config").
+			Code("shutdown_failed").
+			Errorf("shutdown configuration services")
 	}
 
 	return cfg, nil

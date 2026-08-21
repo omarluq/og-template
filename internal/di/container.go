@@ -6,6 +6,8 @@ import (
 
 	"github.com/samber/do/v2"
 	"github.com/samber/oops"
+
+	"github.com/omarluq/og-template/internal/config"
 )
 
 // Container wraps the root injector used by the CLI runtime.
@@ -19,7 +21,7 @@ func NewContainer(configPath string) (*Container, error) {
 	do.ProvideNamedValue(injector, ConfigPathKey, configPath)
 	RegisterServices(injector)
 
-	if _, err := do.Invoke[*ConfigService](injector); err != nil {
+	if _, err := do.Invoke[*LoggerService](injector); err != nil {
 		return nil, oops.
 			In("di").
 			Code("container_init").
@@ -27,6 +29,11 @@ func NewContainer(configPath string) (*Container, error) {
 	}
 
 	return &Container{injector: injector}, nil
+}
+
+// Config returns the resolved application configuration.
+func (c *Container) Config() *config.Config {
+	return do.MustInvoke[*ConfigService](c.injector).Get()
 }
 
 // ShutdownWithContext stops all registered services using the given context.
