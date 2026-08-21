@@ -14,33 +14,78 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  govulncheck:
+    name: Govulncheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Run govulncheck
+        uses: golang/govulncheck-action@032d45514ae346b1db93c04b0c90b841c370344f # v1
+        with:
+          go-version-file: go.mod
+          check-latest: false
+          go-package: ./...
+          repo-checkout: false
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Scan working tree
+        run: |
+          docker run --rm \
+            --volume "${{ github.workspace }}:/repo" \
+            --workdir /repo \
+            ghcr.io/betterleaks/betterleaks:v1.5.0@sha256:e78fa87a9113506302d7f08698f8e1065c8c5bb363e43b2db058ea4464189922 \
+            dir . -v --redact
+
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup Go
-        uses: actions/setup-go@v7
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version-file: go.mod
+          check-latest: false
           cache: true
 
+      - name: Check module tidiness
+        run: go mod tidy -diff
+
       - name: Setup Task
-        uses: arduino/setup-task@v3.0.0
+        uses: arduino/setup-task@c0bc642852239c2689f73f4ea6459c29405f3c52 # v3.0.0
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v9
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
+
+      - name: Dead code
+        run: go tool deadcode -test -filter='^github.com/omarluq/og-template/' ./...
 
       - name: Test
         run: task test-coverage
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v7
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7
         with:
-          file: ./coverage.out
+          files: ./coverage.out
           token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
 
   build:
     name: Build
@@ -55,12 +100,15 @@ jobs:
             goarch: arm64
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup Go
-        uses: actions/setup-go@v7
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version-file: go.mod
+          check-latest: false
           cache: true
 
       - name: Build
@@ -74,7 +122,8 @@ jobs:
           go build -v -o bin/og-template-${{ matrix.goos }}-${{ matrix.goarch }}${ext} ./cmd/og-template
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: og-template-${{ matrix.goos }}-${{ matrix.goarch }}
           path: bin/
+          if-no-files-found: error

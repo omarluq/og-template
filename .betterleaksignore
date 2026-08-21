@@ -1,0 +1,2 @@
+# Documentation-only fake credential used to demonstrate what not to commit.
+.agents/skills/golang-security/references/secrets.md:generic-api-key:20
