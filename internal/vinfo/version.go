@@ -7,31 +7,67 @@ import (
 	"strings"
 )
 
-var (
-	// Version is the semantic version injected at build time.
-	Version = "dev"
-	// Commit is the VCS revision injected at build time.
-	Commit = "none"
-	// BuildDate is the UTC build timestamp injected at build time.
-	BuildDate = "unknown"
+const (
+	developmentVersion = "dev"
+	unknownCommit      = "none"
+	unknownBuildDate   = "unknown"
 )
 
 // String returns a human-readable build version string.
 func String() string {
-	version := Version
+	metadata := readBuildMetadata()
 
-	if version == "dev" {
-		if info, ok := debug.ReadBuildInfo(); ok {
-			version = fallbackVersion(info.Main.Version)
+	return fmt.Sprintf(
+		"%s (commit=%s, built=%s)",
+		metadata.version,
+		metadata.commit,
+		metadata.buildDate,
+	)
+}
+
+func readBuildMetadata() buildMetadata {
+	metadata := buildMetadata{
+		version:   developmentVersion,
+		commit:    unknownCommit,
+		buildDate: unknownBuildDate,
+	}
+
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return metadata
+	}
+
+	metadata.version = fallbackVersion(info.Main.Version)
+
+	if info.Main.Version == "" || info.Main.Version == "(devel)" {
+		metadata.version = revisionVersion(info.Settings)
+	}
+
+	for _, setting := range info.Settings {
+		switch setting.Key {
+		case "vcs.revision":
+			metadata.commit = setting.Value
+		case "vcs.time":
+			metadata.buildDate = setting.Value
 		}
 	}
 
-	return fmt.Sprintf("%s (commit=%s, built=%s)", version, Commit, BuildDate)
+	return metadata
+}
+
+func revisionVersion(settings []debug.BuildSetting) string {
+	for _, setting := range settings {
+		if setting.Key == "vcs.revision" && setting.Value != "" {
+			return setting.Value
+		}
+	}
+
+	return developmentVersion
 }
 
 func fallbackVersion(version string) string {
 	if version == "" || version == "(devel)" {
-		return "dev"
+		return developmentVersion
 	}
 
 	return strings.TrimSpace(version)

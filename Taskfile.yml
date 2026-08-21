@@ -34,19 +34,8 @@ tasks:
   build:
     desc: Build binary
     deps: [ensure-cache]
-    vars:
-      VERSION:
-        sh: git describe --tags --always --dirty 2>/dev/null || printf dev
-      COMMIT:
-        sh: git rev-parse --short HEAD 2>/dev/null || printf none
-      BUILD_DATE:
-        sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
-      LDFLAGS: >-
-        -X github.com/omarluq/og-template/internal/vinfo.Version={{.VERSION}}
-        -X github.com/omarluq/og-template/internal/vinfo.Commit={{.COMMIT}}
-        -X github.com/omarluq/og-template/internal/vinfo.BuildDate={{.BUILD_DATE}}
     cmds:
-      - go build -ldflags "{{.LDFLAGS}}" -o {{.BUILD_DIR}}/{{.BINARY_NAME}} {{.MAIN_PACKAGE}}
+      - go build -o {{.BUILD_DIR}}/{{.BINARY_NAME}} {{.MAIN_PACKAGE}}
 
   clean:
     desc: Clean build artifacts

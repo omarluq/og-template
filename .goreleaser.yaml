@@ -26,9 +26,6 @@ builds:
         goarch: arm64
     ldflags:
       - -s -w
-      - -X github.com/omarluq/og-template/internal/vinfo.Version={{.Version}}
-      - -X github.com/omarluq/og-template/internal/vinfo.Commit={{.Commit}}
-      - -X github.com/omarluq/og-template/internal/vinfo.BuildDate={{.Date}}
 
 archives:
   - id: default
